@@ -8,7 +8,7 @@ import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet'
 import L from 'leaflet';
 
 // ALAMAT SERVER BACKEND KITA
-const API_URL = 'http://localhost:5000/api';
+const API_URL = '/api/login';
 
 // Konfigurasi icon Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
