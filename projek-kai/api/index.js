@@ -1,6 +1,6 @@
-const express = require('express');
-const mysql = require('mysql2');
-const cors = require('cors');
+import express from 'express';
+import mysql from 'mysql2';
+import cors from 'cors';
 
 const app = express();
 
@@ -134,5 +134,5 @@ app.delete('/api/users/:id', (req, res) => {
     });
 });
 
-// EKSPOR APLIKASI UNTUK VERCEL (Jangan gunakan app.listen)
-module.exports = app;
+// EKSPOR APLIKASI UNTUK VERCEL (Gaya Modern)
+export default app;
