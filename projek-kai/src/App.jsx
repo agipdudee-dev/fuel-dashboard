@@ -684,8 +684,16 @@ const HourlyDashboard = ({ activeRecord, onSave }) => {
   return (
     <div>
       <div className="flex justify-between items-center mb-8">
-        <div><h1 className="text-2xl font-bold text-slate-800">Laporan Resume Per Jam</h1><p className="text-slate-500 text-sm mt-1">Upload CSV format Hourly Resume</p></div>
-        <label className="bg-orange-600 text-white px-5 py-2.5 rounded-lg cursor-pointer hover:bg-orange-700 flex gap-2 font-medium"><Upload size={18} /> {fileName || 'Upload CSV'}<input type="file" accept=".csv, .txt" className="hidden" onChange={handleUpload} /></label>
+        <div>
+          <h1 className="text-2xl font-bold text-slate-800">Laporan Resume Per Jam</h1>
+          <p className="text-slate-500 text-sm mt-1">{activeRecord ? 'Melihat Data dari Riwayat Server' : 'Upload CSV format Hourly Resume'}</p>
+        </div>
+        {!activeRecord && (
+          <label className="bg-orange-600 text-white px-5 py-2.5 rounded-lg cursor-pointer hover:bg-orange-700 flex gap-2 font-medium">
+            <Upload size={18} /> {fileName || 'Upload CSV'}
+            <input type="file" accept=".csv, .txt" className="hidden" onChange={handleUpload} />
+          </label>
+        )}
       </div>
       {data.length > 0 && (
         <>
@@ -704,6 +712,7 @@ const HourlyDashboard = ({ activeRecord, onSave }) => {
     </div>
   );
 };
+
 /* ========================================================================= */
 /* DAILY DASHBOARD                                                           */
 /* ========================================================================= */
@@ -764,8 +773,16 @@ const DailyDashboard = ({ activeRecord, onSave }) => {
   return (
     <div>
       <div className="flex justify-between items-center mb-8">
-        <div><h1 className="text-2xl font-bold text-slate-800">Laporan Performa Harian</h1><p className="text-slate-500 text-sm mt-1">Upload 1 file CSV Raw Data</p></div>
-        <label className="bg-blue-600 text-white px-5 py-2.5 rounded-lg cursor-pointer hover:bg-blue-700 flex gap-2 font-medium"><Upload size={18} /> {fileName || 'Upload CSV'}<input type="file" accept=".csv, .txt" className="hidden" onChange={handleUpload} /></label>
+        <div>
+          <h1 className="text-2xl font-bold text-slate-800">Laporan Performa Harian</h1>
+          <p className="text-slate-500 text-sm mt-1">{activeRecord ? 'Melihat Data dari Riwayat Server' : 'Upload 1 file CSV Raw Data'}</p>
+        </div>
+        {!activeRecord && (
+          <label className="bg-blue-600 text-white px-5 py-2.5 rounded-lg cursor-pointer hover:bg-blue-700 flex gap-2 font-medium">
+            <Upload size={18} /> {fileName || 'Upload CSV'}
+            <input type="file" accept=".csv, .txt" className="hidden" onChange={handleUpload} />
+          </label>
+        )}
       </div>
       {data.length > 0 && (
         <>
@@ -788,6 +805,7 @@ const DailyDashboard = ({ activeRecord, onSave }) => {
     </div>
   );
 };
+
 /* ========================================================================= */
 /* MULTI-DAY DASHBOARD                                                       */
 /* ========================================================================= */
@@ -843,8 +861,16 @@ const MultiDayDashboard = ({ mode, maxFiles, activeRecord, onSave }) => {
   return (
     <div>
       <div className="flex justify-between items-center mb-8">
-        <div><h1 className="text-2xl font-bold text-slate-800">Laporan Agregasi {mode}</h1><p className="text-slate-500 text-sm mt-1">Upload max {maxFiles} file (Tahan CTRL)</p></div>
-        <label className="bg-emerald-600 text-white px-5 py-2.5 rounded-lg cursor-pointer hover:bg-emerald-700 flex gap-2 font-medium"><Upload size={18} /> Upload Multi CSV<input type="file" multiple accept=".csv, .txt" className="hidden" onChange={handleUpload} /></label>
+        <div>
+          <h1 className="text-2xl font-bold text-slate-800">Laporan Agregasi {mode}</h1>
+          <p className="text-slate-500 text-sm mt-1">{activeRecord ? 'Melihat Data dari Riwayat Server' : `Upload max ${maxFiles} file (Tahan CTRL)`}</p>
+        </div>
+        {!activeRecord && (
+          <label className="bg-emerald-600 text-white px-5 py-2.5 rounded-lg cursor-pointer hover:bg-emerald-700 flex gap-2 font-medium">
+            <Upload size={18} /> Upload Multi CSV
+            <input type="file" multiple accept=".csv, .txt" className="hidden" onChange={handleUpload} />
+          </label>
+        )}
       </div>
       {processedPoints.length > 0 && (
         <>
