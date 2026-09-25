@@ -272,10 +272,10 @@ export default function App() {
       ) : (
         <div className="min-h-screen bg-[#f8fafc] flex flex-col font-sans">
           <nav className="bg-white border-b border-slate-200 sticky top-0 z-40 px-6 py-3 flex justify-between items-center shadow-sm">
-            <div className="flex items-center gap-6">
-              <img src="/kai-logo.jpeg" alt="KAI" className="h-8 object-contain" onError={(e)=>e.target.src="/kai-logo.jpg"} />
-              <div className="h-6 w-px bg-slate-300"></div>
-              <img src="/yph-logo(1).png" alt="YPH" className="h-6 object-contain" onError={(e)=>e.target.src="/yph-logo(1).png"} />
+            <div className="flex items-center gap-3 md:gap-6">
+            <img src="/kai-logo.jpeg" alt="KAI" className="h-6 md:h-8 object-contain" onError={(e)=>e.target.src="/kai-logo.jpg"} />
+            <div className="h-4 md:h-6 w-px bg-slate-300"></div>
+            <img src="/yph-logo(1).png" alt="YPH" className="h-4 md:h-6 object-contain" onError={(e)=>e.target.src="/yph-logo(1).png"} />
             </div>
             <div className="flex gap-4 items-center">
               <div className="text-right hidden md:block">
@@ -355,11 +355,11 @@ const LoginView = ({ onLogin }) => {
       </div>
 
       <div className="w-full md:w-1/2 flex flex-col relative min-h-screen">
-        <div className="absolute top-6 right-6 lg:top-8 lg:right-10 flex items-center gap-4">
-          <img src="/kai-logo.jpeg" alt="KAI" className="h-8 object-contain" onError={(e)=>e.target.src="/kai-logo.jpg"} />
-          <div className="h-6 w-px bg-slate-300"></div>
-          <img src="/yph-logo(1).png" alt="YPH" className="h-6 object-contain" onError={(e)=>e.target.src="/yph-logo(1).png"} />
-        </div>
+       <div className="absolute top-4 right-4 lg:top-8 lg:right-10 flex items-center gap-2 md:gap-4">
+  <img src="/kai-logo.jpeg" alt="KAI" className="h-5 md:h-8 object-contain" onError={(e)=>e.target.src="/kai-logo.jpg"} />
+  <div className="h-4 md:h-6 w-px bg-slate-300"></div>
+  <img src="/yph-logo(1).png" alt="YPH" className="h-4 md:h-6 object-contain" onError={(e)=>e.target.src="/yph-logo(1).png"} />
+</div>
 
         <div className="flex-1 flex flex-col justify-center max-w-sm w-full mx-auto px-6 mt-16 md:mt-0">
           <div className="mb-8">
@@ -404,10 +404,10 @@ const HomeMenu = ({ onSelect, onLogout, historyCount, currentUser }) => (
   <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
     <div className="max-w-5xl w-full">
       <div className="flex justify-between items-center mb-10">
-        <div className="flex items-center gap-6">
-          <img src="/kai-logo.jpeg" alt="KAI" className="h-12 object-contain" onError={(e)=>e.target.src="/kai-logo.jpg"} />
-          <img src="/yph-logo(1).png" alt="YPH" className="h-10 object-contain" onError={(e)=>e.target.src="/yph-logo(1).png"} />
-        </div>
+        <div className="flex items-center gap-3 md:gap-6">
+          <img src="/kai-logo.jpeg" alt="KAI" className="h-8 md:h-12 object-contain" onError={(e)=>e.target.src="/kai-logo.jpg"} />
+          <img src="/yph-logo(1).png" alt="YPH" className="h-6 md:h-10 object-contain" onError={(e)=>e.target.src="/yph-logo(1).png"} />
+          </div>
         <div className="flex gap-4 items-center">
           <div className="text-right hidden sm:block">
             <p className="text-sm font-bold text-slate-800">Hi, {currentUser?.name}</p>
