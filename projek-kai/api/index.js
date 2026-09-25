@@ -4,11 +4,9 @@ import cors from 'cors';
 
 const app = express();
 
-// Middleware
 app.use(cors()); 
 app.use(express.json({ limit: '50mb' }));
 
-// Konfigurasi Database MySQL (Menggunakan Pool agar stabil di Vercel Serverless)
 const db = mysql.createPool({
     host: 'kai-monitoring-db-alghi6084-7e6c.d.aivencloud.com',   
     port: 24664,   
@@ -22,41 +20,10 @@ const db = mysql.createPool({
     connectTimeout: 20000 
 });
 
-// Otomatis buat tabel users jika belum ada
-db.query(`
-    CREATE TABLE IF NOT EXISTS users (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        name VARCHAR(100) NOT NULL,
-        username VARCHAR(50) UNIQUE NOT NULL,
-        password VARCHAR(255) NOT NULL,
-        role ENUM('admin', 'user') DEFAULT 'user',
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
-`);
-
-// Otomatis buat tabel history jika belum ada
-db.query(`
-    CREATE TABLE IF NOT EXISTS history (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        type VARCHAR(20) NOT NULL,
-        file_name VARCHAR(255) NOT NULL,
-        payload LONGTEXT NOT NULL,
-        uploaded_by VARCHAR(100) NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
-`);
-
-// Masukkan akun admin default jika belum ada
-db.query(`
-    INSERT IGNORE INTO users (name, username, password, role) 
-    VALUES ('Administrator', 'admin', 'admin123', 'admin');
-`);
-
 /* ==============================================
-   API ENDPOINTS (JALUR KOMUNIKASI)
+   API ENDPOINTS 
 ============================================== */
 
-// 1. API Login
 app.post('/api/login', (req, res) => {
     const { username, password } = req.body;
     const query = 'SELECT id, name, username, role FROM users WHERE username = ? AND password = ?';
@@ -72,7 +39,6 @@ app.post('/api/login', (req, res) => {
     });
 });
 
-// 2. API Ambil Data Riwayat (GET)
 app.get('/api/history', (req, res) => {
     const query = 'SELECT * FROM history ORDER BY created_at DESC';
     db.query(query, (err, results) => {
@@ -90,7 +56,6 @@ app.get('/api/history', (req, res) => {
     });
 });
 
-// 3. API Simpan Data Riwayat Baru (POST)
 app.post('/api/history', (req, res) => {
     const { type, fileName, payload, uploadedBy } = req.body;
     const query = 'INSERT INTO history (type, file_name, payload, uploaded_by) VALUES (?, ?, ?, ?)';
@@ -101,7 +66,6 @@ app.post('/api/history', (req, res) => {
     });
 });
 
-// 4. API Hapus Riwayat (DELETE)
 app.delete('/api/history/:id', (req, res) => {
     db.query('DELETE FROM history WHERE id = ?', [req.params.id], (err, result) => {
         if (err) return res.status(500).json({ error: err.message });
@@ -109,7 +73,6 @@ app.delete('/api/history/:id', (req, res) => {
     });
 });
 
-// 5. API Manajemen User (GET - Ambil Semua User)
 app.get('/api/users', (req, res) => {
     db.query('SELECT id, name, username, role FROM users ORDER BY id DESC', (err, results) => {
         if (err) return res.status(500).json({ error: err.message });
@@ -117,7 +80,6 @@ app.get('/api/users', (req, res) => {
     });
 });
 
-// 6. API Manajemen User (POST - Tambah User Baru)
 app.post('/api/users', (req, res) => {
     const { name, username, password, role } = req.body;
     const query = 'INSERT INTO users (name, username, password, role) VALUES (?, ?, ?, ?)';
@@ -127,7 +89,6 @@ app.post('/api/users', (req, res) => {
     });
 });
 
-// 7. API Manajemen User (DELETE - Hapus User)
 app.delete('/api/users/:id', (req, res) => {
     db.query('DELETE FROM users WHERE id = ?', [req.params.id], (err, result) => {
         if (err) return res.status(500).json({ error: err.message });
@@ -135,5 +96,4 @@ app.delete('/api/users/:id', (req, res) => {
     });
 });
 
-// EKSPOR APLIKASI UNTUK VERCEL (Gaya Modern)
 export default app;
