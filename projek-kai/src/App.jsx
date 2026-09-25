@@ -7,8 +7,8 @@ import { Upload, FileText, Zap, Droplet, Gauge, Map as MapIcon, MapPin, ArrowLef
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
 import L from 'leaflet';
 
-// ALAMAT SERVER BACKEND KITA
-const API_URL = '/api/login';
+// ALAMAT SERVER BACKEND KITA (SUDAH DIPERBAIKI)
+const API_URL = '/api';
 
 // Konfigurasi icon Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
@@ -101,7 +101,7 @@ const GuideModal = ({ isOpen, onClose }) => {
             </ul>
           </div>
 
-          <div className="space-y-3">
+<div className="space-y-3">
             <h4 className="text-lg font-bold text-blue-700 flex items-center gap-2"><span className="bg-blue-100 text-blue-700 w-6 h-6 rounded-full flex items-center justify-center text-sm">2</span> Hak Akses (Role)</h4>
             <ul className="list-disc list-outside space-y-2 text-slate-600 ml-8">
               <li><strong>Admin:</strong> Memiliki akses penuh, termasuk menu "Manajemen Akun" untuk menambah atau menghapus user di Database MySQL.</li>
@@ -199,7 +199,6 @@ export default function App() {
         body: JSON.stringify({ username, password })
       });
       const data = await res.json();
-      
       if (data.success) {
         setCurrentUser(data.user);
         setView('home');
@@ -303,8 +302,7 @@ export default function App() {
           </main>
         </div>
       )}
-
-      <ConfirmModal 
+ <ConfirmModal 
         isOpen={showLogoutModal}
         title="Konfirmasi Keluar"
         message="Apakah Anda yakin ingin logout dari sistem?"
@@ -399,7 +397,6 @@ const LoginView = ({ onLogin }) => {
     </div>
   );
 };
-
 /* ========================================================================= */
 /* MENU UTAMA (UPDATE TATA LETAK MENJADI 3 KOLOM / GRID 3x2)                 */
 /* ========================================================================= */
@@ -493,8 +490,7 @@ const UserManagementDashboard = ({ users, onAddUser, onDeleteUser, currentUser }
   if (currentUser?.role !== 'admin') {
     return <div className="p-12 text-center text-red-500 font-bold">Akses Ditolak. Anda bukan Admin.</div>;
   }
-
-  return (
+return (
     <div>
       <div className="flex justify-between items-center mb-8">
         <div>
@@ -596,8 +592,7 @@ const HistoryDashboard = ({ history, onView, onDelete, currentUser }) => {
           </select>
         </div>
       )}
-
-      {filteredHistory.length === 0 ? (
+ {filteredHistory.length === 0 ? (
         <div className="bg-white rounded-2xl border-2 border-dashed border-slate-300 p-12 text-center">
           <HistoryIcon className="w-12 h-12 text-slate-300 mx-auto mb-3" />
           <p className="text-slate-500 font-medium">Belum ada data di dalam server MySQL.</p>
@@ -709,7 +704,6 @@ const HourlyDashboard = ({ activeRecord, onSave }) => {
     </div>
   );
 };
-
 /* ========================================================================= */
 /* DAILY DASHBOARD                                                           */
 /* ========================================================================= */
@@ -794,7 +788,6 @@ const DailyDashboard = ({ activeRecord, onSave }) => {
     </div>
   );
 };
-
 /* ========================================================================= */
 /* MULTI-DAY DASHBOARD                                                       */
 /* ========================================================================= */
