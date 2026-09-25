@@ -335,7 +335,7 @@ const LoginView = ({ onLogin }) => {
     
     setIsLoading(false);
     if (!success) {
-      setErrorMsg('Username/Password salah, atau Server Node.js belum menyala!');
+      setErrorMsg('Username/Password salah');
     }
   };
 
