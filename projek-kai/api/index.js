@@ -10,15 +10,16 @@ app.use(express.json({ limit: '50mb' }));
 
 // Konfigurasi Database MySQL (Menggunakan Pool agar stabil di Vercel Serverless)
 const db = mysql.createPool({
-    host: process.env.DB_HOST || 'kai-monitoring-db-alghi6084-7e6c.d.aivencloud.com',   
-    port: process.env.DB_PORT || 24664,   
-    user: process.env.DB_USER || 'avnadmin',
-    password: process.env.DB_PASSWORD || 'AVNS_aSxvHfXVWPBh1ubAG6o',
-    database: process.env.DB_NAME || 'defaultdb',
+    host: 'kai-monitoring-db-alghi6084-7e6c.d.aivencloud.com',   
+    port: 24664,   
+    user: 'avnadmin',
+    password: 'AVNS_aSxvHfXVWPBh1ubAG6o',
+    database: 'defaultdb',
     ssl: { rejectUnauthorized: false },
     waitForConnections: true,
     connectionLimit: 10,
-    queueLimit: 0
+    queueLimit: 0,
+    connectTimeout: 20000 
 });
 
 // Otomatis buat tabel users jika belum ada
