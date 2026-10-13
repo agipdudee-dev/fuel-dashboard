@@ -807,7 +807,7 @@ const DailyDashboard = ({ activeRecord, onSave }) => {
 };
 
 /* ========================================================================= */
-/* MULTI-DAY DASHBOARD                                                       */
+/* MULTI-DAY DASHBOARD (Dengan Algoritma Deteksi Refuel BBM)                 */
 /* ========================================================================= */
 const MultiDayDashboard = ({ mode, maxFiles, activeRecord, onSave }) => {
   const [processedPoints, setProcessedPoints] = useState([]);
@@ -832,23 +832,45 @@ const MultiDayDashboard = ({ mode, maxFiles, activeRecord, onSave }) => {
       const rows = results.data.filter(r => r['Time'] != null && r['Time'] !== '');
       if (rows.length > 0) {
         let lastLat = -6.465, lastLng = 108.237, dayTotalSpeed = 0, dayValidSpeed = 0, dayMaxSpeed = 0, dayCalculatedDistance = 0, prevLat = null, prevLng = null;
-        const startFuel = parseFloat(String(rows[0]['Fuel Level (L)'] || '0').replace(',', '.'));
-        const endFuel = parseFloat(String(rows[rows.length - 1]['Fuel Level (L)'] || '0').replace(',', '.'));
-        const fuelConsumed = Math.max(0, startFuel - endFuel);
+        
+        // --- LOGIKA BBM PINTAR (ANTI-REFUEL ERROR) ---
+        let fuelConsumed = 0;
+        let startSegmentFuel = parseFloat(String(rows[0]['Fuel Level (L)'] || '0').replace(',', '.'));
+        let prevFuel = startSegmentFuel;
+        // ---------------------------------------------
+
         for(let j = 0; j < rows.length; j++) {
           const lat = parseFloat(String(rows[j]['Latitude'] || '').replace(',', '.'));
           const lng = parseFloat(String(rows[j]['Longitude'] || '').replace(',', '.'));
           const speed = parseFloat(String(rows[j]['Speed'] || '0').replace(',', '.'));
+          const currentFuel = parseFloat(String(rows[j]['Fuel Level (L)'] || '0').replace(',', '.'));
+          
           if (!isNaN(lat) && !isNaN(lng) && lat !== 0 && lng !== 0) { 
             lastLat = lat; lastLng = lng; 
             if (prevLat !== null && prevLng !== null) dayCalculatedDistance += calculateDistance(prevLat, prevLng, lat, lng);
             prevLat = lat; prevLng = lng;
           }
           if (!isNaN(speed)) { dayTotalSpeed += speed; dayValidSpeed++; if(speed > dayMaxSpeed) dayMaxSpeed = speed; }
+          
+          // DETEKSI PENGISIAN BBM: Jika level naik > 15 Liter dari sebelumnya
+          if (!isNaN(currentFuel)) {
+            if (currentFuel > prevFuel + 15) {
+              // Tambahkan total konsumsi sebelum diisi bensin
+              fuelConsumed += Math.max(0, startSegmentFuel - prevFuel); 
+              // Jadikan bensin baru sebagai titik awal hitungan selanjutnya
+              startSegmentFuel = currentFuel; 
+            }
+            prevFuel = currentFuel;
+          }
         }
+        
+        // Tambahkan sisa konsumsi dari segmen terakhir hari itu
+        fuelConsumed += Math.max(0, startSegmentFuel - prevFuel);
         const dayAvgSpeed = dayValidSpeed > 0 ? (dayTotalSpeed / dayValidSpeed) : 0;
+        
         accumBBM += fuelConsumed; accumDist += dayCalculatedDistance;
         if(dayAvgSpeed > 0) { accumSpeed += dayAvgSpeed; validSpeedDays++; }
+        
         pointsArr.push({ dayName: `Hari ${i + 1}`, fuelConsumed: parseFloat(fuelConsumed.toFixed(1)), avgSpeed: parseFloat(dayAvgSpeed.toFixed(1)), maxSpeed: parseFloat(dayMaxSpeed.toFixed(1)), distance: parseFloat(dayCalculatedDistance.toFixed(1)), efficiency: fuelConsumed > 0 ? parseFloat((dayCalculatedDistance / fuelConsumed).toFixed(2)) : 0, lat: lastLat, lng: lastLng });
       }
     }
