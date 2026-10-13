@@ -807,7 +807,7 @@ const DailyDashboard = ({ activeRecord, onSave }) => {
 };
 
 /* ========================================================================= */
-/* MULTI-DAY DASHBOARD (Dengan Algoritma Deteksi Refuel BBM)                 */
+/* MULTI-DAY DASHBOARD (Algoritma Akumulasi Baris-per-Baris / Anti-Guncangan)*/
 /* ========================================================================= */
 const MultiDayDashboard = ({ mode, maxFiles, activeRecord, onSave }) => {
   const [processedPoints, setProcessedPoints] = useState([]);
@@ -830,14 +830,19 @@ const MultiDayDashboard = ({ mode, maxFiles, activeRecord, onSave }) => {
       const text = await readAsText(files[i]);
       const results = await parseCSV(text);
       const rows = results.data.filter(r => r['Time'] != null && r['Time'] !== '');
+      
       if (rows.length > 0) {
         let lastLat = -6.465, lastLng = 108.237, dayTotalSpeed = 0, dayValidSpeed = 0, dayMaxSpeed = 0, dayCalculatedDistance = 0, prevLat = null, prevLng = null;
         
-        // --- LOGIKA BBM PINTAR (ANTI-REFUEL ERROR) ---
+        // --- LOGIKA BBM BARU (BACA TIAP BARIS CSV) ---
         let fuelConsumed = 0;
-        let startSegmentFuel = parseFloat(String(rows[0]['Fuel Level (L)'] || '0').replace(',', '.'));
-        let prevFuel = startSegmentFuel;
-        // ---------------------------------------------
+        let lastValidFuel = 0;
+        
+        // Cari angka bensin pertama yang valid (bukan kosong/0 karena error sensor awal)
+        for (let r = 0; r < rows.length; r++) {
+           let val = parseFloat(String(rows[r]['Fuel Level (L)'] || '0').replace(',', '.'));
+           if (!isNaN(val) && val > 0) { lastValidFuel = val; break; }
+        }
 
         for(let j = 0; j < rows.length; j++) {
           const lat = parseFloat(String(rows[j]['Latitude'] || '').replace(',', '.'));
@@ -845,6 +850,7 @@ const MultiDayDashboard = ({ mode, maxFiles, activeRecord, onSave }) => {
           const speed = parseFloat(String(rows[j]['Speed'] || '0').replace(',', '.'));
           const currentFuel = parseFloat(String(rows[j]['Fuel Level (L)'] || '0').replace(',', '.'));
           
+          // Kalkulasi Jarak & Kecepatan
           if (!isNaN(lat) && !isNaN(lng) && lat !== 0 && lng !== 0) { 
             lastLat = lat; lastLng = lng; 
             if (prevLat !== null && prevLng !== null) dayCalculatedDistance += calculateDistance(prevLat, prevLng, lat, lng);
@@ -852,20 +858,20 @@ const MultiDayDashboard = ({ mode, maxFiles, activeRecord, onSave }) => {
           }
           if (!isNaN(speed)) { dayTotalSpeed += speed; dayValidSpeed++; if(speed > dayMaxSpeed) dayMaxSpeed = speed; }
           
-          // DETEKSI PENGISIAN BBM: Jika level naik > 15 Liter dari sebelumnya
-          if (!isNaN(currentFuel)) {
-            if (currentFuel > prevFuel + 15) {
-              // Tambahkan total konsumsi sebelum diisi bensin
-              fuelConsumed += Math.max(0, startSegmentFuel - prevFuel); 
-              // Jadikan bensin baru sebagai titik awal hitungan selanjutnya
-              startSegmentFuel = currentFuel; 
+          // Kalkulasi BBM
+          if (!isNaN(currentFuel) && currentFuel > 0) {
+            if (lastValidFuel > currentFuel) {
+                // BBM Turun: Tambahkan selisihnya ke total terpakai
+                fuelConsumed += (lastValidFuel - currentFuel);
+                lastValidFuel = currentFuel; 
+            } else if (currentFuel > lastValidFuel + 10) {
+                // BBM Naik Drastis (> 10L): Lokomotif isi bensin
+                lastValidFuel = currentFuel; 
             }
-            prevFuel = currentFuel;
+            // Jika BBM naik sedikit (<= 10L), diabaikan karena itu hanya guncangan cairan di tangki
           }
         }
         
-        // Tambahkan sisa konsumsi dari segmen terakhir hari itu
-        fuelConsumed += Math.max(0, startSegmentFuel - prevFuel);
         const dayAvgSpeed = dayValidSpeed > 0 ? (dayTotalSpeed / dayValidSpeed) : 0;
         
         accumBBM += fuelConsumed; accumDist += dayCalculatedDistance;
